@@ -3,6 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main] # 當 main 分支更新時觸發
+  workflow_dispatch:
 
 permissions:
   contents: read
