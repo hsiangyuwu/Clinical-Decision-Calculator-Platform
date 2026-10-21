@@ -249,14 +249,8 @@ export const preciseHbr = createUnifiedFormulaCalculator({
 
     complexCalculate: (getValue, getStdValue, getRadioValue, getCheckboxValue) => {
         const age = getValue('precise-hbr-age');
-        // Use getStdValue if standardUnit is set to ensure we get g/dL
-        // But unified-calculator handles getStdValue logic inside performComplexCalculation if we passed it.
-        // The implementation here uses `getValue` which just gets raw value.
-        // However, if auto-populate works correctly, it fills the input with the converted value.
-        // Let's use getStdValue for robustness if the user enters data in a different unit (though UI doesn't have a toggle here yet, but auto-pop does).
-        // Actually, for consistency with other inputs without toggles, getValue is fine as long as the label says g/dL.
-        // But to support "Unit Converter" mentioned in user request, we should probably enable unit conversion at the data fetching level, which we are doing below.
-        const hb = getValue('precise-hbr-hb');
+        // The score formula expects g/dL, regardless of the displayed Hb unit.
+        const hb = getStdValue('precise-hbr-hb', 'g/dL');
         const wbc = getValue('precise-hbr-wbc');
         const egfr = getValue('precise-hbr-egfr');
 
