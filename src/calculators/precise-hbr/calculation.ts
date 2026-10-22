@@ -1,12 +1,13 @@
 ﻿/**
  * PRECISE-HBR Score Calculation Logic
  *
- * Predicts bleeding risk in patients undergoing stent implantation.
+ * Research approximation; see the scoring-function comment and regression tests.
  */
 
 import type {
     ComplexCalculationResult,
     GetValueFn,
+    GetStdValueFn,
     GetRadioValueFn
 } from '../../types/calculator-formula.js';
 
@@ -40,8 +41,14 @@ export function calculatePreciseHbrScore(
     oralAnticoagulation: boolean,
     arcHbrRisk: boolean
 ): ScoreResult {
-    let score = 2; // Base Score
-    const breakdownParts: string[] = ['Base Score (2)'];
+    // Research-derived approximation; not official EOC coefficients.
+    // 52 EOC observations / 50 distinct synthetic inputs; all integer scores match.
+    // 42 development + 10 pre-frozen hold-out (model/predictions frozen before queries).
+    // Not validation of clinical predictive performance or bleeding-probability calibration.
+    // Test: src/__tests__/calculators/precise-hbr-eoc-regression.test.ts
+    // Data: src/__tests__/fixtures/precise-hbr-eoc-regression.json
+    let score = 2.33; // Frozen primary working estimate, not an official coefficient.
+    const breakdownParts: string[] = ['Base Score (2.33)'];
 
     // --- Age ---
     // Range 30-80. If > 30: + (Age - 30) * 0.25
@@ -50,7 +57,7 @@ export function calculatePreciseHbrScore(
     if (age > 80) ageClamped = 80;
 
     if (age > 30) {
-        const agePoints = (ageClamped - 30) * 0.26;
+        const agePoints = (ageClamped - 30) * 0.25;
         if (agePoints > 0) {
             score += agePoints;
             breakdownParts.push(`Age ${age} (Clamped: ${ageClamped}) -> +${agePoints.toFixed(2)}`);
@@ -72,13 +79,13 @@ export function calculatePreciseHbrScore(
     }
 
     // --- eGFR ---
-    // Range 5 - 100. If < 100: + (100 - eGFR) * 0.05
+    // Range 5 - 100. If < 100: + (100 - eGFR) * 0.055
     let egfrClamped = egfr;
     if (egfr < 5) egfrClamped = 5;
     if (egfr > 100) egfrClamped = 100;
 
     if (egfr < 100) {
-        const egfrPoints = (100 - egfrClamped) * 0.05;
+        const egfrPoints = (100 - egfrClamped) * 0.055;
         if (egfrPoints > 0) {
             score += egfrPoints;
             breakdownParts.push(
@@ -112,7 +119,7 @@ export function calculatePreciseHbrScore(
         breakdownParts.push('ARC-HBR Risk Factor (+3)');
     }
 
-    // Round to integer (image says "最後四捨五入取整數")
+    // Sum every contribution before rounding; do not round individual components.
     const finalScore = Math.round(score);
 
     if (Math.abs(finalScore - score) > 0.001) {
@@ -128,17 +135,18 @@ export function calculatePreciseHbrScore(
  * PRECISE-HBR Main Calculation Function
  *
  * @param getValue - Get raw value function
- * @param getStdValue - Get standardized value function (unused)
+ * @param getStdValue - Get standardized value function (Hb must be in g/dL)
  * @param getRadioValue - Get radio value function
  * @returns Calculation result
  */
 export function preciseHbrCalculation(
     getValue: GetValueFn,
-    getStdValue: (id: string, unit: string) => number | null,
+    getStdValue: GetStdValueFn,
     getRadioValue: GetRadioValueFn
 ): ComplexCalculationResult | null {
     const age = getValue('precise-hbr-age');
-    const hb = getValue('precise-hbr-hb');
+    // Preserve the unit correction from 31cb2bd for both UI and direct callers.
+    const hb = getStdValue('precise-hbr-hb', 'g/dL');
     const wbc = getValue('precise-hbr-wbc');
     const egfr = getValue('precise-hbr-egfr');
 
@@ -170,7 +178,7 @@ export function preciseHbrCalculation(
         arcHbrRisk
     );
 
-    // Interpretation
+    // Existing display contract retained. These ranges are not EOC exact probabilities.
     const s = result.score;
     let riskLevel = '';
     let bleedingRisk = '';

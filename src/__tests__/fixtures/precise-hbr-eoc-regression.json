@@ -1,0 +1,1689 @@
+{
+  "version": "52-observation-regression-v1",
+  "algorithm": "original",
+  "purpose": "Production regression against saved independent EOC answers; no new API requests or expected-answer fitting",
+  "frozenModelSha256": "c0b96346390ad96be3530511e393acec536a07a81df8fbd7c979edea4fd039e4",
+  "frozenPredictionsSha256": "f4ef03fd5834e59a5395d0b82f1eedeeb5fa1335ce2904133dc54657189ab30a",
+  "sourceHashes": {
+    "src/__tests__/fixtures/precise-hbr-eoc-original.json": "f29a522758256f3bd6518306747f3aa738dbbbeddce1f1fce5b9084edcec5c64",
+    "docs/clinical-validation/PRECISE-HBR_api_formula_probe_2026-10-22.reference.json": "4f34705e0be00f703bd626c95debddfdda9dbb24bb1ac67c2e3098682e3becc4",
+    "docs/clinical-validation/PRECISE-HBR_node_reference_10_2026-10-22/reference.json": "2ab5690b01af64f23821d2c01c220fc8979909c762f205bf0766757133efe0f6",
+    "docs/clinical-validation/PRECISE-HBR_egfr24_discrimination_2026-10-22.reference.json": "1936b011a3ee1f97cbce1005bcfa888d78a9a09ad97d1dc4bc51f08f5b86aa87",
+    "docs/clinical-validation/PRECISE-HBR_final_validation_2026-10-22/training_reference.json": "08670a1792d542922d8fc564232d595891df8366560844cd217e245d0b2ecc2f",
+    "docs/clinical-validation/PRECISE-HBR_final_validation_2026-10-22/holdout_reference.json": "d979ebe5ce276cb49490e6dd5ab8c517cf0684bc82e6d549d7ee1c7b95a28d46"
+  },
+  "limitations": [
+    "Training42 and previously independent Holdout10 retain source labels.",
+    "Reusing holdout for production regression is not a new independent validation.",
+    "Original18 are saved screenshot transcriptions; images absent.",
+    "sourceHashes and provenance.sourceArtifact identify preserved local source artifacts, not public repository links.",
+    "Those source artifacts, frozen model files and excluded docs/clinical-validation files are not included in this five-file PR.",
+    "This fixture publishes synthetic inputs, recorded EOC reference outputs and allowlisted provenance; it does not claim public availability of original API responses."
+  ],
+  "cases": [
+    {
+      "caseId": "EOC-001",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 80,
+        "hemoglobin": 12.3,
+        "whiteBloodCellCount": 3,
+        "egfr": 100,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 22,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 3.79
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "EOC-002",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 60,
+        "hemoglobin": 12.3,
+        "whiteBloodCellCount": 3,
+        "egfr": 100,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 17,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 2.35
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "EOC-003",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "whiteBloodCellCount": 3,
+        "egfr": 100,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 2,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.55
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "EOC-004",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 12,
+        "whiteBloodCellCount": 3,
+        "egfr": 100,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 10,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 1.2
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "EOC-005",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "whiteBloodCellCount": 8,
+        "egfr": 100,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 6,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.81
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "EOC-006",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "whiteBloodCellCount": 3,
+        "egfr": 80,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 3,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.61
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "EOC-007",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "whiteBloodCellCount": 3,
+        "egfr": 70,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 4,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.67
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "EOC-008",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "whiteBloodCellCount": 3,
+        "egfr": 60,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 5,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.74
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "EOC-009",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "whiteBloodCellCount": 3,
+        "egfr": 50,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 5,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.74
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "EOC-010",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "whiteBloodCellCount": 3,
+        "egfr": 45,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 5,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.74
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "EOC-011",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "whiteBloodCellCount": 3,
+        "egfr": 40,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 6,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.81
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "EOC-012",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "whiteBloodCellCount": 3,
+        "egfr": 30,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 6,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.81
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "EOC-013",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "whiteBloodCellCount": 3,
+        "egfr": 29,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 6,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.81
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "EOC-014",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "whiteBloodCellCount": 3,
+        "egfr": 100,
+        "previousBleeding": true,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 9,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 1.09
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "EOC-015",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "whiteBloodCellCount": 3,
+        "egfr": 100,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": true,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 7,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.89
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "EOC-016",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "whiteBloodCellCount": 3,
+        "egfr": 100,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": true,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 5,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.74
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "EOC-017",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "whiteBloodCellCount": 3,
+        "egfr": 100,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": true,
+        "chronicBleedingDiathesis": true,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 5,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.74
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "EOC-018",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "whiteBloodCellCount": 3,
+        "egfr": 100,
+        "previousBleeding": true,
+        "longTermOralAnticoagulation": true,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 14,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 1.76
+      },
+      "provenance": {
+        "type": "SAVED_USER_SCREENSHOT_TRANSCRIPTION",
+        "sourceArtifact": "src/__tests__/fixtures/precise-hbr-eoc-original.json",
+        "httpStatus": null,
+        "requestStartUtc": null,
+        "responseFinishUtc": null,
+        "evidenceLimitation": "Original screenshots absent from repository; EOC-008 additionally has saved user API payload/response corroboration"
+      }
+    },
+    {
+      "caseId": "T01",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "egfr": 100,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 2,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.55
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_api_formula_probe_2026-10-22.reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T02:28:25.984Z",
+        "responseFinishUtc": null,
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "T02",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "egfr": 60,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 5,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.74
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_api_formula_probe_2026-10-22.reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T02:28:33.968Z",
+        "responseFinishUtc": null,
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "T03",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 31,
+        "hemoglobin": 15,
+        "egfr": 100,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 3,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.61
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_api_formula_probe_2026-10-22.reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T02:28:39.954Z",
+        "responseFinishUtc": null,
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "T04",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 35,
+        "hemoglobin": 15,
+        "egfr": 100,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 4,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.67
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_api_formula_probe_2026-10-22.reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T02:28:45.325Z",
+        "responseFinishUtc": null,
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "T05",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 14.9,
+        "egfr": 100,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 3,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.61
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_api_formula_probe_2026-10-22.reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T02:28:50.701Z",
+        "responseFinishUtc": null,
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "T06",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "egfr": 78,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 4,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.67
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_api_formula_probe_2026-10-22.reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T02:28:56.139Z",
+        "responseFinishUtc": null,
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "T07",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "egfr": 27,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 6,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.81
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_api_formula_probe_2026-10-22.reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T02:29:01.490Z",
+        "responseFinishUtc": null,
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "T08",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "egfr": 10,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 7,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.89
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_api_formula_probe_2026-10-22.reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T02:29:07.040Z",
+        "responseFinishUtc": null,
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "HB-5",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 5,
+        "egfr": 100,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 27,
+        "riskCategory": "VERY_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 6.09
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_node_reference_10_2026-10-22/reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T05:00:13.119Z",
+        "responseFinishUtc": "2026-10-22T05:00:14.295Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "HB-10",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 10,
+        "egfr": 100,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 15,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 1.94
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_node_reference_10_2026-10-22/reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T05:00:19.310Z",
+        "responseFinishUtc": "2026-10-22T05:00:19.567Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "EGFR-25",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "egfr": 25,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 6,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.81
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_node_reference_10_2026-10-22/reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T05:00:24.576Z",
+        "responseFinishUtc": "2026-10-22T05:00:24.832Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "EGFR-79",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "egfr": 79,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 3,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.61
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_node_reference_10_2026-10-22/reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T05:00:29.839Z",
+        "responseFinishUtc": "2026-10-22T05:00:30.092Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "WBC-3_2",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "egfr": 100,
+        "whiteBloodCellCount": 3.2,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 2,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.55
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_node_reference_10_2026-10-22/reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T05:00:35.107Z",
+        "responseFinishUtc": "2026-10-22T05:00:35.360Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "WBC-14_9",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "egfr": 100,
+        "whiteBloodCellCount": 14.9,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 12,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 1.45
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_node_reference_10_2026-10-22/reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T05:00:40.369Z",
+        "responseFinishUtc": "2026-10-22T05:00:40.791Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "AGE-70",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 70,
+        "hemoglobin": 15,
+        "egfr": 100,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 12,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 1.45
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_node_reference_10_2026-10-22/reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T05:00:45.805Z",
+        "responseFinishUtc": "2026-10-22T05:00:46.305Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "MIX-04",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 70,
+        "hemoglobin": 12.7,
+        "egfr": 60,
+        "whiteBloodCellCount": 6,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 23,
+        "riskCategory": "HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 4.17
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_node_reference_10_2026-10-22/reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T05:00:51.307Z",
+        "responseFinishUtc": "2026-10-22T05:00:51.563Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "MIX-05",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 70,
+        "hemoglobin": 11.2,
+        "egfr": 60,
+        "whiteBloodCellCount": 6,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 26,
+        "riskCategory": "HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 5.54
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_node_reference_10_2026-10-22/reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T05:00:56.567Z",
+        "responseFinishUtc": "2026-10-22T05:00:56.819Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "MIX-06",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 70,
+        "hemoglobin": 11.1,
+        "egfr": 60,
+        "whiteBloodCellCount": 6,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 27,
+        "riskCategory": "VERY_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 6.09
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_node_reference_10_2026-10-22/reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T05:01:01.821Z",
+        "responseFinishUtc": "2026-10-22T05:01:02.075Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "EGFR-24-DISCRIMINATION",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "egfr": 24,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 7,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.89
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_egfr24_discrimination_2026-10-22.reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T05:52:23.001Z",
+        "responseFinishUtc": "2026-10-22T05:52:24.022Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "NEW-EGFR-96_5",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "egfr": 96.5,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 3,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.61
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_final_validation_2026-10-22/training_reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T06:21:44.200Z",
+        "responseFinishUtc": "2026-10-22T06:21:45.185Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "NEW-AGE-74",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 74,
+        "hemoglobin": 15,
+        "egfr": 100,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 13,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 1.6
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_final_validation_2026-10-22/training_reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T06:21:50.188Z",
+        "responseFinishUtc": "2026-10-22T06:21:50.446Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "NEW-HB-11_7",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 11.7,
+        "egfr": 100,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 11,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 1.32
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_final_validation_2026-10-22/training_reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T06:21:55.460Z",
+        "responseFinishUtc": "2026-10-22T06:21:55.707Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "BIN-longTermOralAnticoagulation",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 32,
+        "hemoglobin": 15,
+        "egfr": 100,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": true,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 8,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.99
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_final_validation_2026-10-22/training_reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T06:22:00.717Z",
+        "responseFinishUtc": "2026-10-22T06:22:00.956Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "MIX-03",
+      "split": "training",
+      "input": {
+        "version": "original",
+        "age": 70,
+        "hemoglobin": 12.8,
+        "egfr": 60,
+        "whiteBloodCellCount": 6,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 22,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 3.79
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_final_validation_2026-10-22/training_reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T06:22:05.971Z",
+        "responseFinishUtc": "2026-10-22T06:22:06.225Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "AGE-36",
+      "split": "holdout",
+      "input": {
+        "version": "original",
+        "age": 36,
+        "hemoglobin": 15,
+        "egfr": 100,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 4,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.67
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_final_validation_2026-10-22/holdout_reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T06:28:54.946Z",
+        "responseFinishUtc": "2026-10-22T06:28:55.979Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "AGE-69",
+      "split": "holdout",
+      "input": {
+        "version": "original",
+        "age": 69,
+        "hemoglobin": 15,
+        "egfr": 100,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 12,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 1.45
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_final_validation_2026-10-22/holdout_reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T06:29:00.986Z",
+        "responseFinishUtc": "2026-10-22T06:29:01.230Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "HB-8",
+      "split": "holdout",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 8,
+        "egfr": 100,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 20,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 3.13
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_final_validation_2026-10-22/holdout_reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T06:29:06.242Z",
+        "responseFinishUtc": "2026-10-22T06:29:06.492Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "HB-14_95",
+      "split": "holdout",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 14.95,
+        "egfr": 100,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 2,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.55
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_final_validation_2026-10-22/holdout_reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T06:29:11.502Z",
+        "responseFinishUtc": "2026-10-22T06:29:11.751Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "EGFR-15",
+      "split": "holdout",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "egfr": 15,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 7,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.89
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_final_validation_2026-10-22/holdout_reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T06:29:16.756Z",
+        "responseFinishUtc": "2026-10-22T06:29:17.003Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "EGFR-65",
+      "split": "holdout",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "egfr": 65,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 4,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.67
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_final_validation_2026-10-22/holdout_reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T06:29:22.016Z",
+        "responseFinishUtc": "2026-10-22T06:29:22.261Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "WBC-6",
+      "split": "holdout",
+      "input": {
+        "version": "original",
+        "age": 30,
+        "hemoglobin": 15,
+        "egfr": 100,
+        "whiteBloodCellCount": 6,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 5,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.74
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_final_validation_2026-10-22/holdout_reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T06:29:27.273Z",
+        "responseFinishUtc": "2026-10-22T06:29:27.519Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "BIN-liverCirrhosisWithPortalHypertension",
+      "split": "holdout",
+      "input": {
+        "version": "original",
+        "age": 32,
+        "hemoglobin": 15,
+        "egfr": 100,
+        "whiteBloodCellCount": 3,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": true,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 6,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 0.81
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_final_validation_2026-10-22/holdout_reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T06:29:32.521Z",
+        "responseFinishUtc": "2026-10-22T06:29:32.769Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "MIX-07",
+      "split": "holdout",
+      "input": {
+        "version": "original",
+        "age": 50,
+        "hemoglobin": 10,
+        "egfr": 65,
+        "whiteBloodCellCount": 3.2,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 22,
+        "riskCategory": "NON_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 3.79
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_final_validation_2026-10-22/holdout_reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T06:29:37.780Z",
+        "responseFinishUtc": "2026-10-22T06:29:38.034Z",
+        "evidenceLimitation": null
+      }
+    },
+    {
+      "caseId": "MIX-08",
+      "split": "holdout",
+      "input": {
+        "version": "original",
+        "age": 69,
+        "hemoglobin": 10,
+        "egfr": 65,
+        "whiteBloodCellCount": 4,
+        "previousBleeding": false,
+        "longTermOralAnticoagulation": false,
+        "plateletCount": false,
+        "chronicBleedingDiathesis": false,
+        "liverCirrhosisWithPortalHypertension": false,
+        "activeMalignancy": false,
+        "recentMajorSurgeryOrTrauma": false,
+        "chronicUseOfNsaidsOrCorticosteroids": false
+      },
+      "expectedEOC": {
+        "score": 27,
+        "riskCategory": "VERY_HIGH",
+        "oneYearRiskOfMajorBleedingPerc": 6.09
+      },
+      "provenance": {
+        "type": "DIRECT_API_ALLOWLISTED_RESPONSE",
+        "sourceArtifact": "docs/clinical-validation/PRECISE-HBR_final_validation_2026-10-22/holdout_reference.json",
+        "httpStatus": 200,
+        "requestStartUtc": "2026-10-22T06:29:43.042Z",
+        "responseFinishUtc": "2026-10-22T06:29:43.318Z",
+        "evidenceLimitation": null
+      }
+    }
+  ]
+}

@@ -1,13 +1,9 @@
 /**
- * PRECISE-DAPT Score Calculator
- *
- * PRECISE-DAPT (PREdicting bleeding Complications In patients undergoing Stent implantation and subsEquent Dual Anti Platelet Therapy)
- * 雖然 User 請求寫 PRECISE-HBR，但根據截圖內容（"PRECISE-HBR 分數"、"ARC-HBR 危險因子"），
- * 實際上這是關於 PRECISE-DAPT 改良或者是與 ARC-HBR 結合的一個計算器。
- * 根據截圖標題 "1. 計分邏輯 (Scoring Logic)" 和 "2. 風險分層 (Risk Stratification)"，
- * 我們將實現這個特定的 "PRECISE-HBR" 計算器。
+ * PRECISE-HBR Original calculator UI.
+ * Scoring and interpretation are shared with calculation.ts.
  */
 
+import { preciseHbrCalculation } from './calculation.js';
 import { createUnifiedFormulaCalculator } from '../shared/unified-formula-calculator.js';
 import { LOINC_CODES, SNOMED_CODES, RXNORM_CODES } from '../../fhir-codes.js';
 import { uiBuilder } from '../../ui-builder.js';
@@ -17,105 +13,12 @@ import { fhirDataService } from '../../fhir-data-service.js';
 // PRECISE-HBR 評分函數
 // ==========================================
 
-const calculateScore = (
-    age: number,
-    hb: number,
-    egfr: number,
-    wbc: number,
-    priorBleeding: boolean,
-    oralAnticoagulation: boolean,
-    arcHbrRisk: boolean
-): { score: number; breakdown: string } => {
-    let score = 2; // Base Score
-    const breakdownParts: string[] = ['Base Score (2)'];
-
-    // --- Age ---
-    // Range 30-80. If > 30: + (Age - 30) * 0.25
-    let ageClamped = age;
-    if (age < 30) ageClamped = 30;
-    if (age > 80) ageClamped = 80;
-
-    if (age > 30) {
-        const agePoints = (ageClamped - 30) * 0.26;
-        if (agePoints > 0) {
-            score += agePoints;
-            breakdownParts.push(`Age ${age} (Clamped: ${ageClamped}) -> +${agePoints.toFixed(2)}`);
-        }
-    }
-
-    // --- Hb ---
-    // Range 5.0 - 15.0 g/dL. If < 15: + (15 - Hb) * 2.5
-    let hbClamped = hb;
-    if (hb < 5.0) hbClamped = 5.0;
-    if (hb > 15.0) hbClamped = 15.0;
-
-    if (hb < 15.0) {
-        const hbPoints = (15 - hbClamped) * 2.5;
-        if (hbPoints > 0) {
-            score += hbPoints;
-            breakdownParts.push(`Hb ${hb} (Clamped: ${hbClamped}) -> +${hbPoints.toFixed(2)}`);
-        }
-    }
-
-    // --- eGFR ---
-    // Range 5 - 100. If < 100: + (100 - eGFR) * 0.05
-    let egfrClamped = egfr;
-    if (egfr < 5) egfrClamped = 5;
-    if (egfr > 100) egfrClamped = 100;
-
-    if (egfr < 100) {
-        const egfrPoints = (100 - egfrClamped) * 0.05;
-        if (egfrPoints > 0) {
-            score += egfrPoints;
-            breakdownParts.push(
-                `eGFR ${egfr} (Clamped: ${egfrClamped}) -> +${egfrPoints.toFixed(2)}`
-            );
-        }
-    }
-
-    // --- WBC ---
-    // Upper limit 15.0. If > 3: + (WBC - 3) * 0.8
-    let wbcClamped = wbc;
-    if (wbc > 15.0) wbcClamped = 15.0;
-
-    if (wbcClamped > 3) {
-        const wbcPoints = (wbcClamped - 3) * 0.8;
-        score += wbcPoints;
-        breakdownParts.push(`WBC ${wbc} (Clamped: ${wbcClamped}) -> +${wbcPoints.toFixed(2)}`);
-    }
-
-    // --- Categorical ---
-    if (priorBleeding) {
-        score += 7;
-        breakdownParts.push('Prior Bleeding (+7)');
-    }
-    if (oralAnticoagulation) {
-        score += 5;
-        breakdownParts.push('Oral Anticoagulation (+5)');
-    }
-    if (arcHbrRisk) {
-        score += 3;
-        breakdownParts.push('ARC-HBR Risk Factor (+3)');
-    }
-
-    // Round to integer (image says "最後四捨五入取整數")
-    const finalScore = Math.round(score);
-
-    if (Math.abs(finalScore - score) > 0.001) {
-        breakdownParts.push(`Total Raw: ${score.toFixed(2)} -> Rounded: ${finalScore}`);
-    } else {
-        breakdownParts.push(`Total: ${finalScore}`);
-    }
-
-    return { score: finalScore, breakdown: breakdownParts.join('<br>') };
-};
-
 export const preciseHbr = createUnifiedFormulaCalculator({
     id: 'precise-hbr',
     title: 'PRECISE-HBR Score',
     description: 'Predicts bleeding risk in patients undergoing stent implantation.',
     infoAlert:
-        'Calculates bleeding risk using the PRECISE-HBR criteria. Score is rounded to the nearest integer.',
+        'Uses the working score formula checked against 52 saved EOC Original observations. Score is rounded after summing all contributions. Displayed risk ranges are approximate, not EOC exact probabilities.',
 
     autoPopulateAge: 'precise-hbr-age',
 
@@ -247,84 +150,7 @@ export const preciseHbr = createUnifiedFormulaCalculator({
 
     resultTitle: 'PRECISE-HBR Score',
 
-    complexCalculate: (getValue, getStdValue, getRadioValue, getCheckboxValue) => {
-        const age = getValue('precise-hbr-age');
-        // The score formula expects g/dL, regardless of the displayed Hb unit.
-        const hb = getStdValue('precise-hbr-hb', 'g/dL');
-        const wbc = getValue('precise-hbr-wbc');
-        const egfr = getValue('precise-hbr-egfr');
-
-        const priorBleeding = getRadioValue('prior_bleeding') === '1';
-        const oralAnticoagulation = getRadioValue('oral_anticoagulation') === '1';
-        // ARC-HBR Risk Factors
-        const hbrPlt = getRadioValue('arc_hbr_plt') === '1';
-        const hbrDiathesis = getRadioValue('arc_hbr_diathesis') === '1';
-        const hbrCirrhosis = getRadioValue('arc_hbr_cirrhosis') === '1';
-        const hbrMalignancy = getRadioValue('arc_hbr_malignancy') === '1';
-        const hbrSurgery = getRadioValue('arc_hbr_surgery') === '1';
-        const hbrNsaids = getRadioValue('arc_hbr_nsaids') === '1';
-
-        const arcHbrRisk =
-            hbrPlt || hbrDiathesis || hbrCirrhosis || hbrMalignancy || hbrSurgery || hbrNsaids;
-
-        if (age === null || hb === null || wbc === null || egfr === null) {
-            return null;
-        }
-
-        const result = calculateScore(
-            age,
-            hb,
-            egfr,
-            wbc,
-            priorBleeding,
-            oralAnticoagulation,
-            arcHbrRisk
-        );
-
-        // Interpretation
-        const s = result.score;
-        let riskLevel = '';
-        let bleedingRisk = '';
-        let severity: 'success' | 'warning' | 'danger' = 'success';
-
-        if (s <= 22) {
-            riskLevel = 'Non-HBR (Low Risk)';
-            bleedingRisk = '0.5% ~ 3.5%';
-            severity = 'success';
-        } else if (s <= 26) {
-            riskLevel = 'HBR (High Risk)';
-            bleedingRisk = '3.5% ~ 5.5%';
-            severity = 'warning';
-        } else if (s <= 30) {
-            riskLevel = 'Very HBR (Very High Risk)';
-            bleedingRisk = '5.5% ~ 8.0%';
-            severity = 'danger';
-        } else {
-            // > 30
-            // Image says 31-35 is Extreme (8.0-12.0)
-            // > 35 is Cap (15%)
-            if (s <= 35) {
-                riskLevel = 'Extreme Risk';
-                bleedingRisk = '8.0% ~ 12.0%';
-                severity = 'danger';
-            } else {
-                riskLevel = 'Extreme Risk (Capped)';
-                bleedingRisk = 'Upper limit ~15%';
-                severity = 'danger';
-            }
-        }
-
-        return {
-            score: s,
-            interpretation: riskLevel,
-            severity,
-            additionalResults: [
-                { label: 'Risk Group', value: riskLevel },
-                { label: '1-Year Bleeding Risk', value: bleedingRisk }
-            ],
-            breakdown: result.breakdown
-        };
-    },
+    complexCalculate: preciseHbrCalculation,
 
     fhirAutoPopulate: [
         {
