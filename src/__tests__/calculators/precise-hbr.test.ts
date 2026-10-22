@@ -76,16 +76,16 @@ describe('PRECISE-HBR Score Calculator', () => {
             expect(score).toBe(2); // Base only
         });
 
-        test('Age 50 adds ~5.2 points', () => {
-            // (50-30) * 0.26 = 5.2
+        test('Age 50 adds 5 points before final rounding', () => {
+            // 2.33 + (50-30) * 0.25 = 7.33
             const score = calculateScore(50, 15.0, 100, 3, false, false, false);
-            expect(score).toBe(7); // 2 + 5.2 rounded
+            expect(score).toBe(7);
         });
 
-        test('Age 80 adds ~13 points (capped)', () => {
-            // (80-30) * 0.26 = 13
+        test('Age 80 adds 12.5 points (capped)', () => {
+            // 2.33 + (80-30) * 0.25 = 14.83
             const score = calculateScore(80, 15.0, 100, 3, false, false, false);
-            expect(score).toBe(15); // 2 + 13
+            expect(score).toBe(15);
         });
 
         test('Age above 80 is capped', () => {
@@ -108,13 +108,13 @@ describe('PRECISE-HBR Score Calculator', () => {
         test('Hb 12 adds 7.5 points', () => {
             // (15-12) * 2.5 = 7.5
             const score = calculateScore(30, 12.0, 100, 3, false, false, false);
-            expect(score).toBe(10); // 2 + 7.5 rounded
+            expect(score).toBe(10); // 2.33 + 7.5 rounded
         });
 
         test('Hb 8 adds 17.5 points', () => {
             // (15-8) * 2.5 = 17.5
             const score = calculateScore(30, 8.0, 100, 3, false, false, false);
-            expect(score).toBe(20); // 2 + 17.5 rounded
+            expect(score).toBe(20); // 2.33 + 17.5 rounded
         });
     });
 
@@ -128,16 +128,16 @@ describe('PRECISE-HBR Score Calculator', () => {
             expect(score).toBe(2);
         });
 
-        test('eGFR 60 adds 2 points', () => {
-            // (100-60) * 0.05 = 2
+        test('eGFR 60 matches the independently recorded EOC score 5', () => {
+            // Original EOC-008/T02: 2.33 + 40 * 0.055 = 4.53 -> 5
             const score = calculateScore(30, 15.0, 60, 3, false, false, false);
-            expect(score).toBe(4); // 2 + 2
+            expect(score).toBe(5);
         });
 
-        test('eGFR 20 adds 4 points', () => {
-            // (100-20) * 0.05 = 4
+        test('eGFR 20 adds 4.4 points before final rounding', () => {
+            // Working formula: 2.33 + (100-20) * 0.055 = 6.73
             const score = calculateScore(30, 15.0, 20, 3, false, false, false);
-            expect(score).toBe(6); // 2 + 4
+            expect(score).toBe(7);
         });
     });
 
@@ -154,7 +154,7 @@ describe('PRECISE-HBR Score Calculator', () => {
         test('WBC 10 adds 5.6 points', () => {
             // (10-3) * 0.8 = 5.6
             const score = calculateScore(30, 15.0, 100, 10, false, false, false);
-            expect(score).toBe(8); // 2 + 5.6 rounded
+            expect(score).toBe(8); // 2.33 + 5.6 rounded
         });
     });
 
@@ -193,8 +193,9 @@ describe('PRECISE-HBR Score Calculator', () => {
         });
 
         test('Score 23-26 = HBR (High Risk)', () => {
-            const score = calculateScore(70, 11.0, 50, 10, true, false, false);
-            expect(score).toBeGreaterThan(22);
+            // Saved EOC MIX-04, without binary risk factors.
+            const score = calculateScore(70, 12.7, 60, 6, false, false, false);
+            expect(score).toBe(23);
         });
 
         test('Score with all risk factors = Very High', () => {
@@ -257,13 +258,13 @@ describe('PRECISE-HBR Score Calculator', () => {
     describe('Breakdown String Generation', () => {
         test('Base score is always in breakdown', () => {
             const result = getFullResult(30, 15.0, 100, 3, false, false, false);
-            expect(result.breakdown).toContain('Base Score (2)');
+            expect(result.breakdown).toContain('Base Score (2.33)');
         });
 
         test('Age contribution is in breakdown when applicable', () => {
             const result = getFullResult(50, 15.0, 100, 3, false, false, false);
             expect(result.breakdown).toContain('Age 50');
-            expect(result.breakdown).toContain('5.20');
+            expect(result.breakdown).toContain('5.00');
         });
 
         test('Hb contribution is in breakdown when applicable', () => {
@@ -275,7 +276,7 @@ describe('PRECISE-HBR Score Calculator', () => {
         test('eGFR contribution is in breakdown when applicable', () => {
             const result = getFullResult(30, 15.0, 60, 3, false, false, false);
             expect(result.breakdown).toContain('eGFR 60');
-            expect(result.breakdown).toContain('2.00');
+            expect(result.breakdown).toContain('2.20');
         });
 
         test('WBC contribution is in breakdown when applicable', () => {
@@ -302,13 +303,13 @@ describe('PRECISE-HBR Score Calculator', () => {
         test('Rounding is shown in breakdown when needed', () => {
             // Score that will have fractional part
             const result = getFullResult(45, 15.0, 100, 3, false, false, false);
-            // (45-30)*0.26 = 3.9, total = 5.9 -> rounds to 6
+            // 2.33 + (45-30)*0.25 = 6.08 -> rounds to 6
             expect(result.breakdown).toContain('Rounded');
         });
 
-        test('Total is shown without rounding when score is integer', () => {
+        test('Fractional base remains visible when the displayed score is an integer', () => {
             const result = getFullResult(30, 15.0, 100, 3, false, false, false);
-            expect(result.breakdown).toContain('Total: 2');
+            expect(result.breakdown).toContain('Total Raw: 2.33 -> Rounded: 2');
         });
     });
 
@@ -327,8 +328,33 @@ describe('PRECISE-HBR Score Calculator', () => {
             return (id: string) => values[id] ?? '0';
         };
 
-        // Mock getStdValue (not used but required)
-        const mockGetStdValue = () => null;
+        // Each test supplies its standard-unit values to both getters; Hb is g/dL.
+
+        test.each([
+            [12.3, 22, 'Non-HBR (Low Risk)'],
+            [11.9, 23, 'HBR (High Risk)'],
+            [10.7, 26, 'HBR (High Risk)'],
+            [10.3, 27, 'Very HBR (Very High Risk)'],
+            [9, 30, 'Very HBR (Very High Risk)'],
+            [8.6, 31, 'Extreme Risk'],
+            [7, 35, 'Extreme Risk'],
+            [6.6, 36, 'Extreme Risk (Capped)']
+        ] as const)(
+            'preserves the legacy display boundary: Hb %s -> score %s',
+            (hb, score, label) => {
+                // Software display contract only; these are not additional EOC observations.
+                const getter = createGetValue({
+                    'precise-hbr-age': 80,
+                    'precise-hbr-hb': hb,
+                    'precise-hbr-wbc': 3,
+                    'precise-hbr-egfr': 100
+                });
+                expect(preciseHbrCalculation(getter, getter, () => '0')).toMatchObject({
+                    score,
+                    interpretation: label
+                });
+            }
+        );
 
         test('Returns null when required values are missing', () => {
             const getValue = createGetValue({
@@ -339,7 +365,7 @@ describe('PRECISE-HBR Score Calculator', () => {
             });
             const getRadioValue = createGetRadioValue({});
 
-            const result = preciseHbrCalculation(getValue, mockGetStdValue, getRadioValue);
+            const result = preciseHbrCalculation(getValue, getValue, getRadioValue);
             expect(result).toBeNull();
         });
 
@@ -355,7 +381,7 @@ describe('PRECISE-HBR Score Calculator', () => {
                 oral_anticoagulation: '0'
             });
 
-            const result = preciseHbrCalculation(getValue, mockGetStdValue, getRadioValue);
+            const result = preciseHbrCalculation(getValue, getValue, getRadioValue);
             expect(result).not.toBeNull();
             expect(result!.severity).toBe('success');
             expect(result!.interpretation).toBe('Non-HBR (Low Risk)');
@@ -376,7 +402,7 @@ describe('PRECISE-HBR Score Calculator', () => {
                 oral_anticoagulation: '0'
             });
 
-            const result = preciseHbrCalculation(getValue, mockGetStdValue, getRadioValue);
+            const result = preciseHbrCalculation(getValue, getValue, getRadioValue);
             expect(result).not.toBeNull();
             expect(result!.score).toBeGreaterThan(22);
             expect(result!.score).toBeLessThanOrEqual(26);
@@ -386,47 +412,44 @@ describe('PRECISE-HBR Score Calculator', () => {
 
         test('Very HBR (Very High Risk) for score 27-30', () => {
             const getValue = createGetValue({
-                'precise-hbr-age': 75,
-                'precise-hbr-hb': 9,
-                'precise-hbr-wbc': 12,
-                'precise-hbr-egfr': 40
+                'precise-hbr-age': 70,
+                'precise-hbr-hb': 11.1,
+                'precise-hbr-wbc': 6,
+                'precise-hbr-egfr': 60
             });
             const getRadioValue = createGetRadioValue({
-                prior_bleeding: '1',
+                prior_bleeding: '0',
                 oral_anticoagulation: '0'
             });
 
-            const result = preciseHbrCalculation(getValue, mockGetStdValue, getRadioValue);
+            const result = preciseHbrCalculation(getValue, getValue, getRadioValue);
             expect(result).not.toBeNull();
-            const score = result?.score;
-            if (score !== undefined && score > 26 && score <= 30) {
-                expect(result!.severity).toBe('danger');
-                expect(result!.interpretation).toBe('Very HBR (Very High Risk)');
-            }
+            expect(result!.score).toBe(27); // Saved EOC MIX-06.
+            expect(result!.severity).toBe('danger');
+            expect(result!.interpretation).toBe('Very HBR (Very High Risk)');
         });
 
         test('Extreme Risk for score 31-35', () => {
             const getValue = createGetValue({
                 'precise-hbr-age': 80,
-                'precise-hbr-hb': 8,
-                'precise-hbr-wbc': 14,
-                'precise-hbr-egfr': 20
+                'precise-hbr-hb': 8.6,
+                'precise-hbr-wbc': 3,
+                'precise-hbr-egfr': 100
             });
             const getRadioValue = createGetRadioValue({
-                prior_bleeding: '1',
-                oral_anticoagulation: '1'
+                prior_bleeding: '0',
+                oral_anticoagulation: '0'
             });
 
-            const result = preciseHbrCalculation(getValue, mockGetStdValue, getRadioValue);
+            const result = preciseHbrCalculation(getValue, getValue, getRadioValue);
             expect(result).not.toBeNull();
-            const score = result?.score;
-            if (score !== undefined && score > 30 && score <= 35) {
-                expect(result!.severity).toBe('danger');
-                expect(result!.interpretation).toBe('Extreme Risk');
-                expect(result!.additionalResults).toContainEqual(
-                    expect.objectContaining({ value: '8.0% ~ 12.0%' })
-                );
-            }
+            // Legacy display contract, not an independently verified EOC category.
+            expect(result!.score).toBe(31);
+            expect(result!.severity).toBe('danger');
+            expect(result!.interpretation).toBe('Extreme Risk');
+            expect(result!.additionalResults).toContainEqual(
+                expect.objectContaining({ value: '8.0% ~ 12.0%' })
+            );
         });
 
         test('Extreme Risk (Capped) for score > 35', () => {
@@ -442,7 +465,7 @@ describe('PRECISE-HBR Score Calculator', () => {
                 arc_hbr_plt: '1'
             });
 
-            const result = preciseHbrCalculation(getValue, mockGetStdValue, getRadioValue);
+            const result = preciseHbrCalculation(getValue, getValue, getRadioValue);
             expect(result).not.toBeNull();
             expect(result!.score).toBeGreaterThan(35);
             expect(result!.severity).toBe('danger');
@@ -461,12 +484,12 @@ describe('PRECISE-HBR Score Calculator', () => {
             });
 
             // No ARC-HBR factors
-            const noArc = preciseHbrCalculation(getValue, mockGetStdValue, createGetRadioValue({}));
+            const noArc = preciseHbrCalculation(getValue, getValue, createGetRadioValue({}));
 
             // With one ARC-HBR factor
             const withArc = preciseHbrCalculation(
                 getValue,
-                mockGetStdValue,
+                getValue,
                 createGetRadioValue({ arc_hbr_cirrhosis: '1' })
             );
 
@@ -490,14 +513,14 @@ describe('PRECISE-HBR Score Calculator', () => {
             // One ARC-HBR factor
             const oneArc = preciseHbrCalculation(
                 getValue,
-                mockGetStdValue,
+                getValue,
                 createGetRadioValue({ arc_hbr_plt: '1' })
             );
 
             // Multiple ARC-HBR factors
             const multiArc = preciseHbrCalculation(
                 getValue,
-                mockGetStdValue,
+                getValue,
                 createGetRadioValue({
                     arc_hbr_plt: '1',
                     arc_hbr_diathesis: '1',
@@ -521,7 +544,7 @@ describe('PRECISE-HBR Score Calculator', () => {
             });
             const getRadioValue = createGetRadioValue({});
 
-            const result = preciseHbrCalculation(getValue, mockGetStdValue, getRadioValue);
+            const result = preciseHbrCalculation(getValue, getValue, getRadioValue);
             expect(result).not.toBeNull();
             expect(result!.breakdown).toBeDefined();
             expect(result!.breakdown).toContain('Base Score');
