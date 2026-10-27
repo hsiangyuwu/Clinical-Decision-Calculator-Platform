@@ -186,21 +186,21 @@ export function preciseHbrCalculation(
 
     if (s <= 22) {
         riskLevel = 'Non-HBR (Low Risk)';
-        bleedingRisk = '0.5% ~ 3.5%';
+        bleedingRisk = '0.5% ~ 3.8%';
         severity = 'success';
     } else if (s <= 26) {
         riskLevel = 'HBR (High Risk)';
-        bleedingRisk = '3.5% ~ 5.5%';
+        bleedingRisk = '4.2% ~ 5.5%';
         severity = 'warning';
     } else if (s <= 30) {
         riskLevel = 'Very HBR (Very High Risk)';
-        bleedingRisk = '5.5% ~ 8.0%';
+        bleedingRisk = '6.0% ~ 8.1%';
         severity = 'danger';
     } else {
         // > 30
         if (s <= 35) {
             riskLevel = 'Extreme Risk';
-            bleedingRisk = '8.0% ~ 12.0%';
+            bleedingRisk = '8.9% ~ 12.8%';
             severity = 'danger';
         } else {
             riskLevel = 'Extreme Risk (Capped)';

@@ -179,10 +179,10 @@ export const preciseHbr = createUnifiedFormulaCalculator({
             content: uiBuilder.createTable({
                 headers: ['Score', 'Risk Category', '1-Yr Bleeding Risk'],
                 rows: [
-                    ['≤ 22', 'Non-HBR', '0.5% ~ 3.5%'],
-                    ['23 - 26', 'HBR', '3.5% ~ 5.5%'],
-                    ['27 - 30', 'Very HBR', '5.5% ~ 8.0%'],
-                    ['31 - 35', 'Extreme', '8.0% ~ 12.0%'],
+                    ['≤ 22', 'Non-HBR', '0.5% ~ 3.8%'],
+                    ['23 - 26', 'HBR', '4.2% ~ 5.5%'],
+                    ['27 - 30', 'Very HBR', '6.0% ~ 8.1%'],
+                    ['31 - 35', 'Extreme', '8.9% ~ 12.8%'],
                     ['> 35', 'Capped', '~15%']
                 ]
             })

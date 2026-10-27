@@ -331,17 +331,17 @@ describe('PRECISE-HBR Score Calculator', () => {
         // Each test supplies its standard-unit values to both getters; Hb is g/dL.
 
         test.each([
-            [12.3, 22, 'Non-HBR (Low Risk)'],
-            [11.9, 23, 'HBR (High Risk)'],
-            [10.7, 26, 'HBR (High Risk)'],
-            [10.3, 27, 'Very HBR (Very High Risk)'],
-            [9, 30, 'Very HBR (Very High Risk)'],
-            [8.6, 31, 'Extreme Risk'],
-            [7, 35, 'Extreme Risk'],
-            [6.6, 36, 'Extreme Risk (Capped)']
+            [12.3, 22, 'Non-HBR (Low Risk)', '0.5% ~ 3.8%'],
+            [11.9, 23, 'HBR (High Risk)', '4.2% ~ 5.5%'],
+            [10.7, 26, 'HBR (High Risk)', '4.2% ~ 5.5%'],
+            [10.3, 27, 'Very HBR (Very High Risk)', '6.0% ~ 8.1%'],
+            [9, 30, 'Very HBR (Very High Risk)', '6.0% ~ 8.1%'],
+            [8.6, 31, 'Extreme Risk', '8.9% ~ 12.8%'],
+            [7, 35, 'Extreme Risk', '8.9% ~ 12.8%'],
+            [6.6, 36, 'Extreme Risk (Capped)', 'Upper limit ~15%']
         ] as const)(
-            'preserves the legacy display boundary: Hb %s -> score %s',
-            (hb, score, label) => {
+            'preserves score/category and displays the specified range: Hb %s -> score %s',
+            (hb, score, label, bleedingRisk) => {
                 // Software display contract only; these are not additional EOC observations.
                 const getter = createGetValue({
                     'precise-hbr-age': 80,
@@ -351,7 +351,11 @@ describe('PRECISE-HBR Score Calculator', () => {
                 });
                 expect(preciseHbrCalculation(getter, getter, () => '0')).toMatchObject({
                     score,
-                    interpretation: label
+                    interpretation: label,
+                    additionalResults: [
+                        { label: 'Risk Group', value: label },
+                        { label: '1-Year Bleeding Risk', value: bleedingRisk }
+                    ]
                 });
             }
         );
@@ -386,7 +390,7 @@ describe('PRECISE-HBR Score Calculator', () => {
             expect(result!.severity).toBe('success');
             expect(result!.interpretation).toBe('Non-HBR (Low Risk)');
             expect(result!.additionalResults).toContainEqual(
-                expect.objectContaining({ label: '1-Year Bleeding Risk', value: '0.5% ~ 3.5%' })
+                expect.objectContaining({ label: '1-Year Bleeding Risk', value: '0.5% ~ 3.8%' })
             );
         });
 
@@ -448,7 +452,7 @@ describe('PRECISE-HBR Score Calculator', () => {
             expect(result!.severity).toBe('danger');
             expect(result!.interpretation).toBe('Extreme Risk');
             expect(result!.additionalResults).toContainEqual(
-                expect.objectContaining({ value: '8.0% ~ 12.0%' })
+                expect.objectContaining({ value: '8.9% ~ 12.8%' })
             );
         });
 
