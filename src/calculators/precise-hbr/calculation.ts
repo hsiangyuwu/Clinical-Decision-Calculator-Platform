@@ -234,12 +234,10 @@ export function preciseHbrCalculation(
     } else if (s <= 26) {
         riskLevel = 'HBR (High Risk)';
         severity = 'warning';
-    } else if (s <= 30) {
-        riskLevel = 'Very HBR (Very High Risk)';
-        severity = 'danger';
     } else {
-        // Existing extra UI label (not an independent study-defined category).
-        riskLevel = 'Extreme Risk';
+        // The published study has three risk groups; do not introduce
+        // unsupported "Extreme" subcategories for scores above 30.
+        riskLevel = 'Very HBR (Very High Risk)';
         severity = 'danger';
     }
 
