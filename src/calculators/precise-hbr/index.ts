@@ -3,7 +3,11 @@
  * Scoring and interpretation are shared with calculation.ts.
  */
 
-import { preciseHbrCalculation } from './calculation.js';
+import {
+    preciseHbrCalculation,
+    getPreciseHbrOneYearRisk,
+    PRECISE_HBR_MAX_IMPLEMENTED_SCORE
+} from './calculation.js';
 import { createUnifiedFormulaCalculator } from '../shared/unified-formula-calculator.js';
 import { LOINC_CODES, SNOMED_CODES, RXNORM_CODES } from '../../fhir-codes.js';
 import { uiBuilder } from '../../ui-builder.js';
@@ -174,18 +178,45 @@ export const preciseHbr = createUnifiedFormulaCalculator({
 
     reference: `
         ${uiBuilder.createSection({
-            title: 'Risk Stratification',
+            title: 'Risk Stratification (study-defined categories)',
             icon: '📊',
             content: uiBuilder.createTable({
-                headers: ['Score', 'Risk Category', '1-Yr Bleeding Risk'],
+                headers: ['Score', 'Risk Category'],
                 rows: [
-                    ['≤ 22', 'Non-HBR', '0.5% ~ 3.8%'],
-                    ['23 - 26', 'HBR', '4.2% ~ 5.5%'],
-                    ['27 - 30', 'Very HBR', '6.0% ~ 8.1%'],
-                    ['31 - 35', 'Extreme', '8.9% ~ 12.8%'],
-                    ['> 35', 'Capped', '~15%']
+                    ['≤ 22', 'Non-HBR'],
+                    ['23 - 26', 'HBR'],
+                    ['≥ 27', 'Very HBR']
                 ]
             })
+        })}
+        ${uiBuilder.createSection({
+            title: 'Individual Score / 1-Year Major Bleeding Risk',
+            icon: '📊',
+            content:
+                '<p>Each score and its risk are listed separately. Values marked ~ are ' +
+                'research-only approximations inferred from saved EOC observations, not ' +
+                'official coefficients or independently validated probabilities.</p>' +
+                uiBuilder.createTable({
+                    headers: ['Score', '1-Year Major Bleeding Risk'],
+                    rows: [
+                        ...Array.from({ length: 35 }, (_, i) => {
+                            const score = i + 2;
+                            const risk = getPreciseHbrOneYearRisk(score);
+                            return [
+                                String(score),
+                                risk.percent === null
+                                    ? 'Not established'
+                                    : (risk.source === 'approximation' ? '~' : '') +
+                                      risk.percent.toFixed(2) + '%'
+                            ];
+                        }),
+                        ['37 - ' + PRECISE_HBR_MAX_IMPLEMENTED_SCORE, 'Not established']
+                    ]
+                }) +
+                '<p>Maximum implemented score: ' + PRECISE_HBR_MAX_IMPLEMENTED_SCORE +
+                ' (from input clamps), not an official clinical cap. No 15% cap is applied. ' +
+                'The study-defined Very HBR group includes scores ≥ 27; any more granular ' +
+                'labels shown in results are interface subdivisions only.</p>'
         })}
     `,
 
