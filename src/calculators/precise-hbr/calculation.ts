@@ -132,6 +132,51 @@ export function calculatePreciseHbrScore(
 }
 
 /**
+ * Recorded EOC Original score-to-risk pairs from the preserved 52-case fixture.
+ * Only 20 distinct integer scores (2..27) have recorded probabilities there.
+ * These are regression observations, NOT an independently validated clinical
+ * calibration model or permission to reproduce an official risk algorithm.
+ */
+const EOC_RECORDED_ONE_YEAR_RISK: Readonly<Record<number, number>> = {
+    2: 0.55, 3: 0.61, 4: 0.67, 5: 0.74, 6: 0.81,
+    7: 0.89, 8: 0.99, 9: 1.09, 10: 1.20, 11: 1.32,
+    12: 1.45, 13: 1.60, 14: 1.76, 15: 1.94, 17: 2.35,
+    20: 3.13, 22: 3.79, 23: 4.17, 26: 5.54, 27: 6.09
+};
+
+/** Theoretical maximum of the current *implementation* after variable clamps. */
+export const PRECISE_HBR_MAX_IMPLEMENTED_SCORE = 70;
+
+/**
+ * Evidence-limited per-integer-score bleeding risk for UI presentation only.
+ * The proportional-hazard curve below was inferred from the saved EOC pairs;
+ * it is NOT the EOC model or a clinically validated probability calibration.
+ * Above 36 there is no adequately checked risk mapping: return unavailable,
+ * rather than falsely imposing an upper bound of 15%.
+ */
+export function getPreciseHbrOneYearRisk(score: number): {
+    percent: number | null;
+    source: 'saved-eoc' | 'approximation' | 'unavailable';
+} {
+    if (!Number.isInteger(score) || score < 2 || score > PRECISE_HBR_MAX_IMPLEMENTED_SCORE) {
+        return { percent: null, source: 'unavailable' };
+    }
+
+    const observed = EOC_RECORDED_ONE_YEAR_RISK[score];
+    if (observed !== undefined) {
+        return { percent: observed, source: 'saved-eoc' };
+    }
+    if (score > 36) {
+        return { percent: null, source: 'unavailable' };
+    }
+
+    // Research-only approximation fitted on saved score/risk observations.
+    // 0.09717919 / -5.39107654 are inferred, not published EOC coefficients.
+    const estimate = 100 * (1 - Math.exp(-Math.exp(-5.39107654 + 0.09717919 * score)));
+    return { percent: Number(estimate.toFixed(2)), source: 'approximation' };
+}
+
+/**
  * PRECISE-HBR Main Calculation Function
  *
  * @param getValue - Get raw value function
@@ -178,36 +223,28 @@ export function preciseHbrCalculation(
         arcHbrRisk
     );
 
-    // Existing display contract retained. These ranges are not EOC exact probabilities.
+    // Independent per-score result: score is not the same as bleeding probability.
+    // The >36 probability is not validated; do not invent a 15% upper limit.
     const s = result.score;
     let riskLevel = '';
-    let bleedingRisk = '';
     let severity: 'success' | 'warning' | 'danger' = 'success';
 
     if (s <= 22) {
         riskLevel = 'Non-HBR (Low Risk)';
-        bleedingRisk = '0.5% ~ 3.8%';
-        severity = 'success';
     } else if (s <= 26) {
         riskLevel = 'HBR (High Risk)';
-        bleedingRisk = '4.2% ~ 5.5%';
         severity = 'warning';
-    } else if (s <= 30) {
-        riskLevel = 'Very HBR (Very High Risk)';
-        bleedingRisk = '6.0% ~ 8.1%';
-        severity = 'danger';
     } else {
-        // > 30
-        if (s <= 35) {
-            riskLevel = 'Extreme Risk';
-            bleedingRisk = '8.9% ~ 12.8%';
-            severity = 'danger';
-        } else {
-            riskLevel = 'Extreme Risk (Capped)';
-            bleedingRisk = 'Upper limit ~15%';
-            severity = 'danger';
-        }
+        // The published study has three risk groups; do not introduce
+        // unsupported "Extreme" subcategories for scores above 30.
+        riskLevel = 'Very HBR (Very High Risk)';
+        severity = 'danger';
     }
+
+    const risk = getPreciseHbrOneYearRisk(s);
+    const bleedingRisk = risk.percent === null
+        ? 'Not established (score > 36)'
+        : `${risk.source === 'approximation' ? '~' : ''}${risk.percent.toFixed(2)}%`;
 
     return {
         score: s,

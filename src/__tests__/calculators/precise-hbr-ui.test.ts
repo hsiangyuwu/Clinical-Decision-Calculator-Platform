@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, test } from '@jest/globals';
 import { preciseHbr } from '../../calculators/precise-hbr/index.js';
+import {
+    calculatePreciseHbrScore,
+    getPreciseHbrOneYearRisk,
+    PRECISE_HBR_MAX_IMPLEMENTED_SCORE
+} from '../../calculators/precise-hbr/calculation.js';
 
 describe('PRECISE-HBR UI hemoglobin units', () => {
     afterEach(() => {
@@ -45,24 +50,64 @@ describe('PRECISE-HBR UI hemoglobin units', () => {
     });
 });
 
-describe('PRECISE-HBR approximate bleeding-risk display contract', () => {
+describe('PRECISE-HBR separately displayed score and individual bleeding risk', () => {
     afterEach(() => {
         document.body.innerHTML = '';
     });
 
-    // Software display expectations, not new EOC observations or a probability model.
+    // Saved EOC observations; these do not validate clinical calibration.
     test.each([
-        [12.3, 22, 'Non-HBR (Low Risk)', '0.5% ~ 3.8%', '≤ 22'],
-        [11.9, 23, 'HBR (High Risk)', '4.2% ~ 5.5%', '23 - 26'],
-        [10.7, 26, 'HBR (High Risk)', '4.2% ~ 5.5%', '23 - 26'],
-        [10.3, 27, 'Very HBR (Very High Risk)', '6.0% ~ 8.1%', '27 - 30'],
-        [9, 30, 'Very HBR (Very High Risk)', '6.0% ~ 8.1%', '27 - 30'],
-        [8.6, 31, 'Extreme Risk', '8.9% ~ 12.8%', '31 - 35'],
-        [7, 35, 'Extreme Risk', '8.9% ~ 12.8%', '31 - 35'],
-        [6.6, 36, 'Extreme Risk (Capped)', 'Upper limit ~15%', '> 35']
+        [2, 0.55],
+        [7, 0.89],
+        [22, 3.79],
+        [23, 4.17],
+        [26, 5.54],
+        [27, 6.09]
+    ] as const)('saved EOC score %s displays the recorded %s percent', (score, expected) => {
+        expect(getPreciseHbrOneYearRisk(score)).toEqual({
+            percent: expected,
+            source: 'saved-eoc'
+        });
+    });
+
+    test('estimated and unsupported scores are labeled distinctly', () => {
+        expect(getPreciseHbrOneYearRisk(30)).toMatchObject({
+            percent: 8.07,
+            source: 'approximation'
+        });
+        expect(getPreciseHbrOneYearRisk(36)).toMatchObject({
+            percent: 13.99,
+            source: 'approximation'
+        });
+        expect(getPreciseHbrOneYearRisk(37)).toEqual({
+            percent: null,
+            source: 'unavailable'
+        });
+        expect(getPreciseHbrOneYearRisk(70)).toEqual({
+            percent: null,
+            source: 'unavailable'
+        });
+        expect(getPreciseHbrOneYearRisk(71).percent).toBeNull();
+    });
+
+    test('max of current score implementation is 70, not a 15% risk cap', () => {
+        expect(PRECISE_HBR_MAX_IMPLEMENTED_SCORE).toBe(70);
+        expect(calculatePreciseHbrScore(100, 0, 0, 100, true, true, true).score).toBe(70);
+    });
+
+    test.each([
+        [12.3, '22', '3.79%', 'Non-HBR (Low Risk)'],
+        [11.9, '23', '4.17%', 'HBR (High Risk)'],
+        [10.7, '26', '5.54%', 'HBR (High Risk)'],
+        [10.3, '27', '6.09%', 'Very HBR (Very High Risk)'],
+        [9, '30', '~8.07%', 'Very HBR (Very High Risk)'],
+        [8.6, '31', '~8.85%', 'Very HBR (Very High Risk)'],
+        [7, '35', '~12.78%', 'Very HBR (Very High Risk)'],
+        [6.6, '36', '~13.99%', 'Very HBR (Very High Risk)'],
+        [6.2, '37', 'Not established (score > 36)', 'Very HBR (Very High Risk)']
     ] as const)(
-        'Hb %s -> unchanged score %s, category and specified range in the real UI',
-        async (hb, score, group, risk, tableScore) => {
+        'Hb %s displays score %s and independent risk %s',
+        async (hb, score, risk, group) => {
             const container = document.createElement('div');
             document.body.appendChild(container);
             container.innerHTML = preciseHbr.generateHTML();
@@ -73,8 +118,7 @@ describe('PRECISE-HBR approximate bleeding-risk display contract', () => {
                 container.querySelector<HTMLInputElement>(`#precise-hbr-${name}`)!.value =
                     String(value);
             }
-            container
-                .querySelector('#precise-hbr-hb')!
+            container.querySelector('#precise-hbr-hb')!
                 .dispatchEvent(new Event('input', { bubbles: true }));
 
             const result = container.querySelector('#precise-hbr-result')!;
@@ -83,19 +127,18 @@ describe('PRECISE-HBR approximate bleeding-risk display contract', () => {
                     .find(el => el.querySelector('.ui-result-label')?.textContent === label)
                     ?.querySelector('.ui-result-value')
                     ?.textContent?.trim();
+
             expect(item('Score')).toBe(`${score}points`);
             expect(item('Risk Group')).toBe(group);
-            expect(result.querySelector('.ui-result-interpretation')?.textContent).toBe(group);
             expect(item('1-Year Bleeding Risk')).toBe(risk);
             expect(result.classList.contains('show')).toBe(true);
 
-            const referenceRow = Array.from(container.querySelectorAll('table tbody tr')).find(
-                row => row.querySelector('td')?.textContent?.trim() === tableScore
+            // Reference distinguishes the research score categories from UI subdivisions.
+            const rows = Array.from(container.querySelectorAll('table tbody tr'));
+            expect(rows.some(row => row.querySelector('td')?.textContent?.trim() === score)).toBe(
+                Number(score) <= 36
             );
-            // Preserve the existing reference-table abbreviation for the capped row.
-            expect(referenceRow?.querySelectorAll('td')[2]?.textContent?.trim()).toBe(
-                risk.replace('Upper limit ', '')
-            );
+            expect(container.textContent).toContain('Maximum implemented score: 70');
         }
     );
 });
