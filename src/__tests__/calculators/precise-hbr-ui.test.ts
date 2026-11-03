@@ -101,10 +101,10 @@ describe('PRECISE-HBR separately displayed score and individual bleeding risk', 
         [10.7, '26', '5.54%', 'HBR (High Risk)'],
         [10.3, '27', '6.09%', 'Very HBR (Very High Risk)'],
         [9, '30', '~8.07%', 'Very HBR (Very High Risk)'],
-        [8.6, '31', '~8.85%', 'Extreme Risk'],
-        [7, '35', '~12.78%', 'Extreme Risk'],
-        [6.6, '36', '~13.99%', 'Extreme Risk'],
-        [6.2, '37', 'Not established (score > 36)', 'Extreme Risk']
+        [8.6, '31', '~8.85%', 'Very HBR (Very High Risk)'],
+        [7, '35', '~12.78%', 'Very HBR (Very High Risk)'],
+        [6.6, '36', '~13.99%', 'Very HBR (Very High Risk)'],
+        [6.2, '37', 'Not established (score > 36)', 'Very HBR (Very High Risk)']
     ] as const)(
         'Hb %s displays score %s and independent risk %s',
         async (hb, score, risk, group) => {
