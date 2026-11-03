@@ -215,8 +215,7 @@ export const preciseHbr = createUnifiedFormulaCalculator({
                 }) +
                 '<p>Maximum implemented score: ' + PRECISE_HBR_MAX_IMPLEMENTED_SCORE +
                 ' (from input clamps), not an official clinical cap. No 15% cap is applied. ' +
-                'The study-defined Very HBR group includes scores ≥ 27; any more granular ' +
-                'labels shown in results are interface subdivisions only.</p>'
+                'The study-defined Very HBR group includes scores ≥ 27.</p>'
         })}
     `,
 
